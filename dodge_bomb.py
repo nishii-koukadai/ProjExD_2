@@ -15,6 +15,25 @@ DELTA = {
     pg.K_RIGHT: (+5, 0),
 }
 
+def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+    
+    img = pg.image.load("fig/3.png")
+
+    img_r = pg.transform.flip(img, True, False)
+    
+    
+    kk_dict = {
+        (0, 0): pg.transform.rotozoom(img_r, 0, 0.9),     # キー押下がない場合（右向きをデフォルト）
+        (+5, 0): pg.transform.rotozoom(img_r, 0, 0.9),    # 右
+        (+5, -5): pg.transform.rotozoom(img_r, 45, 0.9),  # 右上（反時計回りに45度）
+        (0, -5): pg.transform.rotozoom(img_r, 90, 0.9),   # 上
+        (+5, +5): pg.transform.rotozoom(img_r, -45, 0.9), # 右下（時計回りに45度）
+        (0, +5): pg.transform.rotozoom(img_r, -90, 0.9),  # 下
+        (-5, 0): pg.transform.rotozoom(img, 0, 0.9),      # 左（元画像をそのまま使用）
+        (-5, -5): pg.transform.rotozoom(img, -45, 0.9),   # 左上
+        (-5, +5): pg.transform.rotozoom(img, 45, 0.9),    # 左下
+    }
+    return kk_dict
 
 def check_bound(rect) -> tuple[bool,bool]:
     yoko, tate = True, True
@@ -37,8 +56,8 @@ def gameover(screen: pg.Surface) -> None:
     kk_img = pg.image.load("fig/3.png") 
     kk_img2 = pg.transform.flip(kk_img, True, False) 
     kk_img = pg.transform.rotozoom(kk_img, 10, 1.0)
-    screen.blit(kk_img, [300, 300])
-    screen.blit(kk_img2, [750, 300])
+    screen.blit(kk_img2, [300, 300])
+    screen.blit(kk_img, [750, 300])
     pg.display.update()
     time.sleep(5)
     
@@ -59,18 +78,24 @@ def main():
     tmr = 0
     vx = 5
     vy = 5
+    kk_imgs = get_kk_imgs()
+    
+    kk_img = kk_imgs[(0, 0)]
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
-
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for key, mv in DELTA.items():
             if key_lst[key]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+        kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True,True):
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
+        
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
@@ -87,6 +112,7 @@ def main():
             vx = -vx
         if not tate:
             vy = -vy
+        kk_img = kk_imgs[tuple(sum_mv)]
         screen.blit(bb_img, bb_rct)
 
 
