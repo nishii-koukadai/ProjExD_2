@@ -14,6 +14,14 @@ DELTA = {
     pg.K_RIGHT: (+5, 0),
 }
 
+def check_bound(rect) -> tuple[bool,bool]:
+    yoko, tate = True, True
+    if rect.left < 0 or WIDTH < rect.right:  # 横方向判定
+        yoko = False
+    if rect.top < 0 or HEIGHT < rect.bottom:  # 縦方向判定
+        tate = False
+    return yoko, tate
+    
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -21,14 +29,15 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-
     bb_img = pg.Surface((20, 20)) 
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10) 
     bb_img.set_colorkey((0, 0, 0))
     bb_rct = bb_img.get_rect()
-    bb_rct.center = random.randint(0,1100), random.randint(0,650)
+    bb_rct.center = random.randint(0,WIDTH), random.randint(0,HEIGHT)
     clock = pg.time.Clock()
     tmr = 0
+    vx = 5
+    vy = 5
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -37,16 +46,24 @@ def main():
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
-
         for key, mv in DELTA.items():
             if key_lst[key]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
-        
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True,True):
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
+            print("1")
+        
+        
+        
         screen.blit(kk_img, kk_rct)
-
-        bb_rct.move_ip(5,5)
+        bb_rct.move_ip(vx,vy)
+        yoko, tate = check_bound(bb_rct)
+        if not yoko:
+            vx = -vx
+        if not tate:
+            vy = -vy
         screen.blit(bb_img, bb_rct)
 
 
