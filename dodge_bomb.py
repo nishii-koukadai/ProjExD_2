@@ -53,9 +53,10 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
-            print("1")
         
-        
+        if kk_rct.colliderect(bb_rct):  # 練習4：kkとbbのrectが重なっていたら
+            print("game over")
+            return
         
         screen.blit(kk_img, kk_rct)
         bb_rct.move_ip(vx,vy)
