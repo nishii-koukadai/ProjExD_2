@@ -8,18 +8,11 @@ import time
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-DELTA = {
-    pg.K_UP: (0, -5),
-    pg.K_DOWN: (0, +5),
-    pg.K_LEFT: (-5, 0),
-    pg.K_RIGHT: (+5, 0),
-}
-
 def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
     
-    img = pg.image.load("fig/3.png")
+    img = pg.image.load("fig/3.png")#標準状態のこうかとん
 
-    img_r = pg.transform.flip(img, True, False)
+    img_r = pg.transform.flip(img, True, False)#反転した状態のこうかとん
     
     
     kk_dict = {
@@ -45,24 +38,34 @@ def check_bound(rect) -> tuple[bool,bool]:
 
 
 def gameover(screen: pg.Surface) -> None:
+    #背景を描画
     bg_img = pg.Surface((WIDTH, HEIGHT)) 
     pg.draw.rect(bg_img, (0, 0, 0), (0,0,WIDTH, HEIGHT),0) 
     bg_img.set_alpha(200)
+    #文字を表示
     screen.blit(bg_img, [0, 0])
     fonto = pg.font.Font(None, 80) 
     txt = fonto.render("Game Over", True, (255, 255, 255)) 
     screen.blit(txt, [400, 300])
-
+    #こうかとんと反転したこうかとんを表示
     kk_img = pg.image.load("fig/3.png") 
     kk_img2 = pg.transform.flip(kk_img, True, False) 
     kk_img = pg.transform.rotozoom(kk_img, 10, 1.0)
     screen.blit(kk_img2, [300, 300])
     screen.blit(kk_img, [750, 300])
     pg.display.update()
-    time.sleep(5)
+    time.sleep(5)#五秒停止
     
     
 def main():
+    #キーボードで移動方向を決定する辞書
+    DELTA = {
+        pg.K_UP: (0, -5),
+        pg.K_DOWN: (0, +5),
+        pg.K_LEFT: (-5, 0),
+        pg.K_RIGHT: (+5, 0),
+    }
+
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
@@ -78,9 +81,10 @@ def main():
     tmr = 0
     vx = 5
     vy = 5
-    kk_imgs = get_kk_imgs()
-    
-    kk_img = kk_imgs[(0, 0)]
+
+    kk_imgs = get_kk_imgs() #辞書を取得
+
+    kk_img = kk_imgs[(0, 0)] #初期状態を指定
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -93,13 +97,17 @@ def main():
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
         kk_rct.move_ip(sum_mv)
+
+        #画面外に行ったら直前の場所に戻す
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
-        
         kk_rct.move_ip(sum_mv)
+        
+        #画面外に行ったら直前の場所に戻す
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         
+        #ゲームオーバー判定
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             print("game over")
