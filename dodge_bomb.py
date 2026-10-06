@@ -1,7 +1,7 @@
 import os
-import sys
 import pygame as pg
 import random
+import sys
 import time
 
 
@@ -97,12 +97,12 @@ def main():
                 sum_mv[1] += mv[1]
         kk_rct.move_ip(sum_mv)
 
-        #画面外に行ったら直前の場所に戻す
+        #画面外に行ったら向きを変える
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         kk_rct.move_ip(sum_mv)
         
-        #画面外に行ったら直前の場所に戻す
+        #画面外に行ったら向きを変える
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         
