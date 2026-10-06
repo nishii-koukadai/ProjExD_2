@@ -2,6 +2,7 @@ import os
 import sys
 import pygame as pg
 import random
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -14,6 +15,7 @@ DELTA = {
     pg.K_RIGHT: (+5, 0),
 }
 
+
 def check_bound(rect) -> tuple[bool,bool]:
     yoko, tate = True, True
     if rect.left < 0 or WIDTH < rect.right:  # 横方向判定
@@ -21,6 +23,25 @@ def check_bound(rect) -> tuple[bool,bool]:
     if rect.top < 0 or HEIGHT < rect.bottom:  # 縦方向判定
         tate = False
     return yoko, tate
+
+
+def gameover(screen: pg.Surface) -> None:
+    bg_img = pg.Surface((WIDTH, HEIGHT)) 
+    pg.draw.rect(bg_img, (0, 0, 0), (0,0,WIDTH, HEIGHT),0) 
+    bg_img.set_alpha(200)
+    screen.blit(bg_img, [0, 0])
+    fonto = pg.font.Font(None, 80) 
+    txt = fonto.render("Game Over", True, (255, 255, 255)) 
+    screen.blit(txt, [400, 300])
+
+    kk_img = pg.image.load("fig/3.png") 
+    kk_img2 = pg.transform.flip(kk_img, True, False) 
+    kk_img = pg.transform.rotozoom(kk_img, 10, 1.0)
+    screen.blit(kk_img, [300, 300])
+    screen.blit(kk_img2, [750, 300])
+    pg.display.update()
+    time.sleep(5)
+    
     
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -54,7 +75,8 @@ def main():
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         
-        if kk_rct.colliderect(bb_rct):  # 練習4：kkとbbのrectが重なっていたら
+        if kk_rct.colliderect(bb_rct):
+            gameover(screen)
             print("game over")
             return
         
