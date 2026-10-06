@@ -8,13 +8,11 @@ import time
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
-    
-    img = pg.image.load("fig/3.png")#標準状態のこうかとん
 
+def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+    img = pg.image.load("fig/3.png")#標準状態のこうかとん
     img_r = pg.transform.flip(img, True, False)#反転した状態のこうかとん
-    
-    
+
     kk_dict = {
         (0, 0): pg.transform.rotozoom(img_r, 0, 0.9),     # キー押下がない場合（右向きをデフォルト）
         (+5, 0): pg.transform.rotozoom(img_r, 0, 0.9),    # 右
@@ -27,6 +25,7 @@ def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
         (-5, +5): pg.transform.rotozoom(img, 45, 0.9),    # 左下
     }
     return kk_dict
+
 
 def check_bound(rect) -> tuple[bool,bool]:
     yoko, tate = True, True
@@ -83,8 +82,8 @@ def main():
     vy = 5
 
     kk_imgs = get_kk_imgs() #辞書を取得
-
     kk_img = kk_imgs[(0, 0)] #初期状態を指定
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -122,7 +121,6 @@ def main():
             vy = -vy
         kk_img = kk_imgs[tuple(sum_mv)]
         screen.blit(bb_img, bb_rct)
-
 
         pg.display.update()
         tmr += 1
